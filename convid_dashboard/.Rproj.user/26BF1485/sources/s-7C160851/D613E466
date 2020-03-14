@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584159151549.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D613E466",
+    "lastKnownWriteTime" : 1584160274,
+    "last_content_update" : 1584160274148,
+    "path" : "~/Documents/convid_datathon/visualizer/convid_dashboard/dashboard/app.R",
+    "project_path" : "dashboard/app.R",
+    "properties" : {
+        "cursorPosition" : "19,34",
+        "scrollLine" : "4"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

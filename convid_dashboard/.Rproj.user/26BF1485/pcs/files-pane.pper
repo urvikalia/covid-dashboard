@@ -1,0 +1,9 @@
+{
+    "path" : "~/Documents/convid_datathon/visualizer/convid_dashboard/app",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
