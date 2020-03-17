@@ -9,17 +9,27 @@ library(data.table)
 library(data.table)
 library(stringr)
 
-confirmed_data <- read_csv("../data/time_series_19-covid-Confirmed.csv")
+setwd("../") #updated working dir to fetch data at parent level
+if(!dir.exists("./Covid-19")){
+  system("git clone https://github.com/CSSEGISandData/COVID-19.git")
+} else {
+  system("cd Covid-19/")
+  system("git pull origin master")
+}
+
+data_root_path <- "./COVID-19/csse_covid_19_data/csse_covid_19_time_series"
+
+confirmed_data <- read_csv(paste0(data_root_path, "/time_series_19-covid-Confirmed.csv"))
 confirmed_data <- confirmed_data %>% gather(day, cases, '1/22/20':ncol(confirmed_data))
 confirmed_data <- confirmed_data %>% mutate(day = as.Date(day, format = "%m/%d/%y"))
 
 selected_date <- max(confirmed_data$day)
 
-deaths_data <- read_csv("../data/time_series_19-covid-Deaths.csv")
+deaths_data <- read_csv(paste0(data_root_path, "/time_series_19-covid-Deaths.csv"))
 deaths_data <- deaths_data %>% gather(day, deaths, '1/22/20':ncol(deaths_data))
 deaths_data <- deaths_data %>% mutate(day = as.Date(day, format = "%m/%d/%y"))
 
-recovered_data <- read_csv("../data/time_series_19-covid-Recovered.csv")
+recovered_data <- read_csv(paste0(data_root_path, "/time_series_19-covid-Recovered.csv"))
 recovered_data <- recovered_data %>% gather(day, recovered, '1/22/20':ncol(recovered_data))
 recovered_data <- recovered_data %>% mutate(day = as.Date(day, format = "%m/%d/%y"))
 
@@ -46,6 +56,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   output$map <- renderLeaflet({
+
     leaflet(merged_data, options = leafletOptions(minZoom = 3, maxZoom = 3, worldCopyJump = FALSE, zoomControl = FALSE, maxBoundsViscocity = 1.0)) %>%
       setMaxBounds(lng1 = -180, lat1 = -90, lng2 = 180, lat2 = 90) %>%
       setView(lng = 79.08, lat = 21.14, zoom = 3) %>% #center at India and with initial zoom to 3
@@ -58,5 +69,6 @@ server <- function(input, output) {
   })
 }
 
-# Run the application 
+
+# Run the application
 shinyApp(ui = ui, server = server)
