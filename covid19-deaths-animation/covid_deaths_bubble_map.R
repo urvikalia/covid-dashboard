@@ -33,6 +33,7 @@ map_text <- paste(
   "Cases : ", merged_data$cases, "<br/>",
   "Recovered : ", merged_data$recovered , "<br/>",
   "Deaths : ", merged_data$deaths , "<br/>",
+  "Active : ", merged_data$cases - merged_data$recovered - merged_data$deaths, "<br/>",
   "Province/State : ", merged_data$`Province/State`, "<br/>",
   "Country : ", merged_data$`Country/Region`, sep="") %>%
   lapply(htmltools::HTML)
