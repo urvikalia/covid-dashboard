@@ -40,7 +40,7 @@ anim = staticplot + transition_states(day, transition_length = 4, state_length =
        subtitle  =  "Top 10 Countries",
        caption  = "COVID19 recovered cases | Data Source: John Hopkins")
 
-animate(anim, 200, fps = 50,  width = 1200, height = 1000, renderer = gifski_renderer("gganim.gif"))
+animate(anim, 200, fps = 10,  width = 1200, height = 1000, renderer = gifski_renderer("gganim.gif"))
 
 #animate(anim, 200, fps = 4,  width = 1200, height = 1000, renderer = ffmpeg_renderer(),rewind = TRUE) -> for_mp4
 
