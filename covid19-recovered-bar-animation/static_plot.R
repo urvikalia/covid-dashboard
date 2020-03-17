@@ -3,6 +3,12 @@ library(ggplot2)
 library(tidyverse)
 library(gifski)
 
+#line graph plot
+ggplot(data=indian_confirmed_cases, aes(x=date, y=total_confirmed_cases, group=1)) + geom_line(color="red")
+
+  ggplot(data=recovered_data_tidy %>% filter(Country.Region == "India"), aes(x=day, y=value, group=1)) +geom_line(color="red")
+
+
 staticplot = ggplot(recovered_data_formatted, aes(rank, group = Country.Region, 
                                        fill = as.factor(Country.Region), color = as.factor(Country.Region))) +
   geom_tile(aes(y = value/2,

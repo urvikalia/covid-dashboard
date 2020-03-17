@@ -18,5 +18,7 @@ recovered_data_formatted <- recovered_data_tidy %>%
   filter(rank <=10) %>%
   ungroup()
 
+write.csv(recovered_data_formatted, "./data/recovered_data_formatted.csv")
+
 
 #execute static_plot.R
