@@ -44,8 +44,8 @@ server <- function(input, output) {
       "Recovered : ", map_data$recovered , "<br/>",
       "Deaths : ", map_data$deaths , "<br/>",
       "Active : ", map_data$cases - map_data$recovered - map_data$deaths, "<br/>",
-      "Province/State : ", map_data$`Province/State`, "<br/>",
-      "Country : ", map_data$`Country/Region`, sep="") %>%
+      "Province/State : ", map_data$`Province.State`, "<br/>",
+      "Country : ", map_data$`Country.Region`, sep="") %>%
       lapply(htmltools::HTML)
     return(map_text) 
   }
