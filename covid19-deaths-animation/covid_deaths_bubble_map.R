@@ -7,10 +7,15 @@ library(waiter)
 
 setwd("../") #updated working dir to fetch data at parent level
 
+spinner <- tagList(
+  spin_fading_circles(),
+  h3("Loading...", style="color:white;")
+)
+
 ui <- fluidPage(
   fluidRow(
     use_waiter(),
-    waiter_show_on_load(),
+    waiter_show_on_load(spinner),
     leafletOutput("map", height=1000)
   )
 )
@@ -66,7 +71,7 @@ server <- function(input, output) {
     merged_data <- merge(confirmed_data, deaths_data, by=c('Province/State', 'Country/Region', 'Lat', 'Long', 'day'))
     merged_data <- merge(merged_data, recovered_data, by=c('Province/State', 'Country/Region', 'Lat', 'Long', 'day'))
     
-    merged_data <- merged_data %>% filter(cases > 10, day == as.Date(selected_date, format = "%m/%d/%y"))
+    merged_data <- merged_data %>% filter(cases > 0, day == as.Date(selected_date, format = "%m/%d/%y"))
     # merged_data <- merged_data %>% filter(str_detect(`Country/Region`, "China"))
     
     map_text <- paste(
