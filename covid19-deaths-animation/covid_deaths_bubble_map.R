@@ -260,21 +260,21 @@ chartsUi <- fluidPage(
            align = "center",
            br(),
            fluidRow(
-             plotOutput("caseschart") %>% withSpinner(color="#0dc5c1")
+             plotOutput("caseschart") %>% withSpinner(color="#518bb8")
            )
     ),
     column(width = 4,
            align = "center",
            br(),
            fluidRow(
-             plotOutput("recoveredchart") %>% withSpinner(color="#0dc5c1")
+             plotOutput("recoveredchart") %>% withSpinner(color="#518bb8")
            )
     ),
     column(width = 4,
            align = "center",
            br(),
            fluidRow(
-             plotOutput("deathchart") %>% withSpinner(color="#0dc5c1")
+             plotOutput("deathchart") %>% withSpinner(color="#518bb8")
            )
     )
   )
