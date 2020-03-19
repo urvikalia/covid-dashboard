@@ -7,6 +7,163 @@ library(waiter)
 library(shinydashboard)
 library(gganimate)
 library(ggplot2)
+library(png)
+library(gifski)
+library(shinycssloaders)
+library(shinydashboardPlus)
+
+createRiseInCasesAnimation <- function(data_set) {
+  confirmed_cases <-  data_set[-c(1,3,4)] # removing province, longitude and lattitude
+  
+  confirmed_cases  <- confirmed_cases %>% group_by(.data$`Country.Region`,.data$day) %>% summarise(cases = sum(cases))
+  
+  confirmed_cases <- confirmed_cases %>%
+    group_by(day) %>%
+    # The * 1 makes it possible to have non-integer ranks while sliding
+    mutate(rank = rank(-cases),
+           Value_lbl = paste0(" ",round(cases))) %>%
+    group_by(.data$`Country.Region`) %>% arrange(desc(.data$cases)) %>% filter(.data$rank <11)
+  
+  staticplot = ggplot(confirmed_cases, aes(rank, group = `Country.Region`,
+                                           fill = as.factor(`Country.Region`), color = as.factor(`Country.Region`))) +
+    geom_tile(aes(y = cases/2,
+                  height = cases,
+                  width = 0.9), alpha = 0.8, color = NA) +
+    geom_text(aes(y = 0, label = paste(`Country.Region`, " ")), vjust = 0.2, hjust = 1) +
+    geom_text(aes(y=cases,label = Value_lbl, hjust=0)) +
+    coord_flip(clip = "off", expand = FALSE) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_x_reverse() +
+    guides(color = FALSE, fill = FALSE) +
+    theme(axis.line=element_blank(),
+          axis.text.x=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          legend.position="none",
+          panel.background=element_blank(),
+          panel.border=element_blank(),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          panel.grid.major.x = element_line( size=.1, color="grey" ),
+          panel.grid.minor.x = element_line( size=.1, color="grey" ),
+          plot.title=element_text(size=25, hjust=0.5, face="bold", colour="grey", vjust=-1),
+          plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="grey"),
+          plot.caption =element_text(size=8, hjust=0.5, face="italic", color="grey"),
+          plot.background=element_blank(),
+          plot.margin = margin(2,2, 2, 4, "cm"))
+  
+  anim = staticplot + transition_states(day, transition_length = 4, state_length = 1) +
+    view_follow(fixed_x = TRUE)  +
+    labs(title = 'COVID19 : {closest_state}',
+         subtitle  =  "Top 10 Countries",
+         caption  = "COVID19 deaths cases | Data Source: John Hopkins")
+  
+  animate(anim, 100, fps = 4,  width = 500, height = 500, renderer = gifski_renderer("./cases.gif"))
+}
+
+createRecoveredCasesAnimation <- function(data_set) {
+  recovered_cases <-  data_set[-c(1,3,4)] # removing province, longitude and lattitude
+  
+  recovered_cases  <- recovered_cases %>% group_by(.data$`Country.Region`,.data$day) %>% summarise(recovered = sum(recovered))
+  
+  recovered_cases <- recovered_cases %>%
+    group_by(day) %>%
+    # The * 1 makes it possible to have non-integer ranks while sliding
+    mutate(rank = rank(-recovered),
+           Value_lbl = paste0(" ",round(recovered))) %>%
+    group_by(.data$`Country.Region`) %>% arrange(desc(.data$recovered)) %>% filter(.data$rank <11)
+  
+  staticplot = ggplot(recovered_cases, aes(rank, group = `Country.Region`,
+                                              fill = as.factor(`Country.Region`), color = as.factor(`Country.Region`))) +
+    geom_tile(aes(y = recovered/2,
+                  height = recovered,
+                  width = 0.9), alpha = 0.8, color = NA) +
+    geom_text(aes(y = 0, label = paste(`Country.Region`, " ")), vjust = 0.2, hjust = 1) +
+    geom_text(aes(y=recovered,label = Value_lbl, hjust=0)) +
+    coord_flip(clip = "off", expand = FALSE) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_x_reverse() +
+    guides(color = FALSE, fill = FALSE) +
+    theme(axis.line=element_blank(),
+          axis.text.x=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          legend.position="none",
+          panel.background=element_blank(),
+          panel.border=element_blank(),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          panel.grid.major.x = element_line( size=.1, color="grey" ),
+          panel.grid.minor.x = element_line( size=.1, color="grey" ),
+          plot.title=element_text(size=25, hjust=0.5, face="bold", colour="grey", vjust=-1),
+          plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="grey"),
+          plot.caption =element_text(size=8, hjust=0.5, face="italic", color="grey"),
+          plot.background=element_blank(),
+          plot.margin = margin(2,2, 2, 4, "cm"))
+  
+  anim = staticplot + transition_states(day, transition_length = 4, state_length = 1) +
+    view_follow(fixed_x = TRUE)  +
+    labs(title = 'COVID19 : {closest_state}',
+         subtitle  =  "Top 10 Countries",
+         caption  = "COVID19 deaths cases | Data Source: John Hopkins")
+  
+  animate(anim, 100, fps = 4,  width = 500, height = 500, renderer = gifski_renderer("./recovered.gif"))
+}
+
+createDeathsAnimation <- function(data_set) {
+  deaths_data <-  data_set[-c(1,3,4)] # removing province, longitude and lattitude
+  
+  deaths_data  <- deaths_data %>% group_by(.data$`Country.Region`,.data$day) %>% summarise(deaths =sum(deaths))
+  
+  ranked_deaths_data <- deaths_data %>%
+    group_by(day) %>%
+    # The * 1 makes it possible to have non-integer ranks while sliding
+    mutate(rank = rank(-deaths),
+           Value_lbl = paste0(" ",round(deaths))) %>%
+    group_by(.data$`Country.Region`) %>% arrange(desc(.data$deaths)) %>% filter(.data$rank <11)
+  
+  staticplot = ggplot(ranked_deaths_data, aes(rank, group = `Country.Region`,
+                                              fill = as.factor(`Country.Region`), color = as.factor(`Country.Region`))) +
+    geom_tile(aes(y = deaths/2,
+                  height = deaths,
+                  width = 0.9), alpha = 0.8, color = NA) +
+    geom_text(aes(y = 0, label = paste(`Country.Region`, " ")), vjust = 0.2, hjust = 1) +
+    geom_text(aes(y=deaths,label = Value_lbl, hjust=0)) +
+    coord_flip(clip = "off", expand = FALSE) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_x_reverse() +
+    guides(color = FALSE, fill = FALSE) +
+    theme(axis.line=element_blank(),
+          axis.text.x=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          legend.position="none",
+          panel.background=element_blank(),
+          panel.border=element_blank(),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          panel.grid.major.x = element_line( size=.1, color="grey" ),
+          panel.grid.minor.x = element_line( size=.1, color="grey" ),
+          plot.title=element_text(size=25, hjust=0.5, face="bold", colour="grey", vjust=-1),
+          plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="grey"),
+          plot.caption =element_text(size=8, hjust=0.5, face="italic", color="grey"),
+          plot.background=element_blank(),
+          plot.margin = margin(2,2, 2, 4, "cm"))
+  
+  anim = staticplot + transition_states(day, transition_length = 4, state_length = 1) +
+    view_follow(fixed_x = TRUE)  +
+    labs(title = 'COVID19 : {closest_state}',
+         subtitle  =  "Top 10 Countries",
+         caption  = "COVID19 deaths cases | Data Source: John Hopkins")
+  
+  animate(anim, 100, fps = 4,  width = 500, height = 500, renderer = gifski_renderer("./deaths.gif"))
+}
 
 createMapPopUpText <- function(data_set) {
   map_text <- paste(
@@ -69,11 +226,12 @@ header <- dashboardHeader(title = "Corona Virus-19 Cases")
 sidebar <- dashboardSidebar(
   collapsed = TRUE,
   sidebarMenu(
-    menuItem("Dashboard", tabName = "dashboard", icon = icon("map"))
+    menuItem("Dashboard", tabName = "dashboard", icon = icon("map")),
+    menuItem("Charts", tabName = "charts", icon = icon("line-chart"))
   )
 )
 
-frow1 <- shinydashboard::box(
+dashboardUi <- fluidPage(shinydashboard::box(
   width = 12,
   title = tags$p('Cases : ', style = "font-size: 120%; padding-left:5px"),
   solidHeader = FALSE,
@@ -84,20 +242,50 @@ frow1 <- shinydashboard::box(
            ,valueBoxOutput("recovered")
            ,valueBoxOutput("deaths")
   )
-)
-
-
-
-frow2 <- fluidRow(
+), fluidRow(
   use_waiter(),
   waiter_show_on_load(spinner),
   leafletOutput("map", height=1000)
+))
+
+
+chartsUi <- fluidPage(
+  fluidRow(class = "text-center",
+           valueBoxOutput("chartcases")
+           ,valueBoxOutput("chartrecovered")
+           ,valueBoxOutput("chartdeaths")
+  ),
+  fluidRow(
+    column(width = 4,
+           align = "center",
+           br(),
+           fluidRow(
+             plotOutput("caseschart") %>% withSpinner(color="#0dc5c1")
+           )
+    ),
+    column(width = 4,
+           align = "center",
+           br(),
+           fluidRow(
+             plotOutput("recoveredchart") %>% withSpinner(color="#0dc5c1")
+           )
+    ),
+    column(width = 4,
+           align = "center",
+           br(),
+           fluidRow(
+             plotOutput("deathchart") %>% withSpinner(color="#0dc5c1")
+           )
+    )
+  )
 )
+
 
 # combine the two fluid rows to make the body
 body <- dashboardBody(
   tabItems(
-    tabItem("dashboard", frow1, frow2)
+    tabItem("dashboard", dashboardUi),
+    tabItem("charts", chartsUi)
   )
 )
 
@@ -135,6 +323,31 @@ server <- function(input, output) {
     
   })
   
+  output$chartcases <- renderValueBox({
+    valueBox(
+      tags$p('Total Cases : ', style = "font-size: 100%;")
+      ,tags$p(format(sum(data_for_map$cases), big.mark=","), style = "font-size: 200%;")
+      ,icon = icon("stats",lib='glyphicon')
+      ,color = "purple")
+  })
+  
+  output$chartrecovered <- renderValueBox({
+    valueBox(
+      tags$p('Total Recovered : ', style = "font-size: 100%;")
+      ,tags$p(format(sum(data_for_map$recovered), big.mark=","), style = "font-size: 200%;")
+      ,icon = icon("stats",lib='glyphicon')
+      ,color = "green")
+  })
+  
+  output$chartdeaths <- renderValueBox({
+    valueBox(
+      tags$p('Total Deaths : ', style = "font-size: 100%;")
+      ,tags$p(format(sum(data_for_map$deaths), big.mark=","), style = "font-size: 200%;")
+      ,icon = icon("stats",lib='glyphicon')
+      ,color = "red")
+    
+  })
+  
   output$map <- renderLeaflet({
     waiter_hide()
     
@@ -148,6 +361,30 @@ server <- function(input, output) {
                        labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")
       )
   })
+  
+  output$deathchart <- renderImage({
+    createDeathsAnimation(data_set)
+    list(src = "deaths.gif",
+         contentType = 'image/gif',
+         alt = "This is alternate text"
+    )
+  }, deleteFile = FALSE)
+  
+  output$recoveredchart <- renderImage({
+    createRecoveredCasesAnimation(data_set)
+    list(src = "recovered.gif",
+         contentType = 'image/gif',
+         alt = "This is alternate text"
+    )
+  }, deleteFile = FALSE)
+  
+  output$caseschart <- renderImage({
+    createRiseInCasesAnimation(data_set)
+    list(src = "cases.gif",
+         contentType = 'image/gif',
+         alt = "This is alternate text"
+    )
+  }, deleteFile = FALSE)
 }
 
 # Run the application
