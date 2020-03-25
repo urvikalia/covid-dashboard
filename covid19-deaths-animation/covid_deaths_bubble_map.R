@@ -10,7 +10,6 @@ library(ggplot2)
 library(png)
 library(gifski)
 library(shinycssloaders)
-library(shinydashboardPlus)
 
 createRiseInCasesAnimation <- function(data_set) {
   confirmed_cases <-  data_set[-c(1,3,4)] # removing province, longitude and lattitude
@@ -76,7 +75,7 @@ createRecoveredCasesAnimation <- function(data_set) {
     group_by(.data$`Country.Region`) %>% arrange(desc(.data$recovered)) %>% filter(.data$rank <11)
   
   staticplot = ggplot(recovered_cases, aes(rank, group = `Country.Region`,
-                                              fill = as.factor(`Country.Region`), color = as.factor(`Country.Region`))) +
+                                           fill = as.factor(`Country.Region`), color = as.factor(`Country.Region`))) +
     geom_tile(aes(y = recovered/2,
                   height = recovered,
                   width = 0.9), alpha = 0.8, color = NA) +
@@ -231,23 +230,16 @@ sidebar <- dashboardSidebar(
   )
 )
 
-dashboardUi <- fluidPage(shinydashboard::box(
-  width = 12,
-  title = tags$p('Cases : ', style = "font-size: 120%; padding-left:5px"),
-  solidHeader = FALSE,
-  collapsible = TRUE,
-  status = "warning",
+dashboardUi <- fluidPage(
   fluidRow(class = "text-center",
            valueBoxOutput("cases")
            ,valueBoxOutput("recovered")
-           ,valueBoxOutput("deaths")
-  )
-), fluidRow(
-  use_waiter(),
-  waiter_show_on_load(spinner),
-  leafletOutput("map", height=1000)
-))
-
+           ,valueBoxOutput("deaths")), 
+  fluidRow(
+    use_waiter(),
+    waiter_show_on_load(spinner),
+    leafletOutput("map", height=1000)
+  ))
 
 chartsUi <- fluidPage(
   fluidRow(class = "text-center",
@@ -280,7 +272,6 @@ chartsUi <- fluidPage(
   )
 )
 
-
 # combine the two fluid rows to make the body
 body <- dashboardBody(
   tabItems(
@@ -290,12 +281,25 @@ body <- dashboardBody(
 )
 
 #completing the ui part with dashboardPage
-ui <- dashboardPage(title = 'Corona Virus-19 Cases', header, sidebar, body, skin='blue')
+ui <- tagList(
+  dashboardPage(title = 'Corona Virus-19 Cases', header, sidebar, body, skin='blue'),
+  tags$footer("Data source : https://github.com/CSSEGISandData/COVID-19", 
+              align = "center", 
+              style = "
+              position:absolute;
+              bottom:0;
+              width:100%;
+              height:35px;
+              color: white;
+              padding: 8px;
+              background-color: #518bb8;
+              z-index: 1000;")
+)
 
 server <- function(input, output) {
   data_set <- loadData()
   selected_date = max(data_set$day)
-  data_for_map <- data_set %>% filter(day == as.Date(selected_date, format = "%m/%d/%y"))
+  data_for_map <- data_set %>% filter(day == selected_date)
   map_pop_up_text <- createMapPopUpText(data_for_map)
   
   output$cases <- renderValueBox({
@@ -351,7 +355,7 @@ server <- function(input, output) {
   output$map <- renderLeaflet({
     waiter_hide()
     
-    leaflet(data_for_map, options = leafletOptions(minZoom = 3, maxZoom = 3, worldCopyJump = FALSE, zoomControl = FALSE, maxBoundsViscocity = 1.0)) %>%
+    leaflet(data_for_map, options = leafletOptions(minZoom = 3, maxZoom = 5, worldCopyJump = FALSE, zoomControl = FALSE, maxBoundsViscocity = 1.0)) %>%
       setMaxBounds(lng1 = -180, lat1 = -90, lng2 = 180, lat2 = 90) %>%
       setView(lng = 79.08, lat = 21.14, zoom = 3) %>% #center at India and with initial zoom to 3
       addProviderTiles("CartoDB.Positron", options = providerTileOptions(noWrap = TRUE)) %>%
@@ -365,24 +369,21 @@ server <- function(input, output) {
   output$deathchart <- renderImage({
     createDeathsAnimation(data_set)
     list(src = "deaths.gif",
-         contentType = 'image/gif',
-         alt = "This is alternate text"
+         contentType = 'image/gif'
     )
   }, deleteFile = FALSE)
   
   output$recoveredchart <- renderImage({
     createRecoveredCasesAnimation(data_set)
     list(src = "recovered.gif",
-         contentType = 'image/gif',
-         alt = "This is alternate text"
+         contentType = 'image/gif'
     )
   }, deleteFile = FALSE)
   
   output$caseschart <- renderImage({
     createRiseInCasesAnimation(data_set)
     list(src = "cases.gif",
-         contentType = 'image/gif',
-         alt = "This is alternate text"
+         contentType = 'image/gif'
     )
   }, deleteFile = FALSE)
 }
