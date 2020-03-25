@@ -360,7 +360,7 @@ server <- function(input, output) {
       setView(lng = 79.08, lat = 21.14, zoom = 3) %>% #center at India and with initial zoom to 3
       addProviderTiles("CartoDB.Positron", options = providerTileOptions(noWrap = TRUE)) %>%
       addCircleMarkers(data_for_map$Long, data_for_map$Lat,
-                       fillColor = "#FF0000", fillOpacity = 0.5, color="white", radius= data_for_map$cases * 0.001 + 12, stroke=FALSE,
+                       fillColor = "#FF0000", fillOpacity = 0.5, color="white", radius= 12, stroke=FALSE,
                        label = map_pop_up_text,
                        labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")
       )
