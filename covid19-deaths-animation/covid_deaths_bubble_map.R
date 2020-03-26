@@ -178,7 +178,7 @@ createMapPopUpText <- function(data_set) {
 
 loadData <- function() {
   #fetch confirmed cases data
-  confirmed_data_url = RCurl::getURLContent("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv")
+  confirmed_data_url = RCurl::getURLContent("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
   confirmed_data_raw = textConnection(confirmed_data_url)
   confirmed_data <- data.table(read.csv(confirmed_data_raw))
   
@@ -187,7 +187,7 @@ loadData <- function() {
     mutate(day = as.Date(sub(".", "", day), "%m.%d.%y"))
   
   #fetch deaths data
-  deaths_data_url = RCurl::getURLContent("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv")
+  deaths_data_url = RCurl::getURLContent("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
   deaths_data_raw = textConnection(deaths_data_url)
   deaths_data <- data.table(read.csv(deaths_data_raw))
   
@@ -196,7 +196,7 @@ loadData <- function() {
     mutate(day = as.Date(sub(".", "", day), "%m.%d.%y"))
   
   #fetch recovered cases data
-  recovered_data_url = RCurl::getURLContent("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv")
+  recovered_data_url = RCurl::getURLContent("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
   recovered_data_raw = textConnection(recovered_data_url)
   recovered_data <- data.table(read.csv(recovered_data_raw))
   
